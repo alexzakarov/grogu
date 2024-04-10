@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="40">
+    <style src="./style.css" >
+        .grogu{
+            font-size: 50px;
+            color: aqua;
+        }
+    </style>
+
+ <g >
+     <div align="center">
+         <p >Grogu</p>
+     </div>
+    </g>
+</svg>
