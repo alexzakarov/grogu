@@ -17,7 +17,7 @@
 <p> The library uses struct as db fields. This means you do not need to specify the db fields more than once.</p>
 
 ```
-	repo := base_repo.NewBaseRepo[CreateUserDbModel, UpdateUserDbModel, UserResDto](ctx, db, "public", "users", "user_id", false, "", "")
+repo := base_repo.NewBaseRepo[CreateUserDbModel, UpdateUserDbModel, UserResDto](ctx, db, "public", "users", "user_id", false, "", "")
 ```
 
 ## Create Example
