@@ -1,18 +1,10 @@
-```css
-    .grogu{
-        font-size: 50px;
-        color: aqua;
-    }
 
-```
 
 <div align="center">
 <img alt="go-grogu" src="/assets/go-grogu.png" width="400" />
 </div>
 
-<div align="center">
-    <p class="grogu">Grogu</p>
-</div>
+## ![plot](./assets/grogu-text.svg)
 
 
 ### Grogu is performance oriented ORM-Like library written in golang
