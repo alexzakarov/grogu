@@ -7,7 +7,7 @@
 
         .subTitle {
             font-size:15px;
-            fill: #00FFFF;
+            fill: rgb(1, 173, 216);
             width:100%;
             font-family: Arial, Helvetica, sans-serif;
         }
