@@ -1,14 +1,18 @@
-<style>
-    .container {
-      font-size: 50px;
-      color: aqua;
+```css
+    .grogu{
+        font-size: 50px;
+        color: aqua;
     }
-  </style>
+
+```
+
 <div align="center">
 <img alt="go-grogu" src="/assets/go-grogu.png" width="400" />
 </div>
 
-<p align="center" class="container">Grogu</p>
+<div align="center">
+    <p class="grogu">Grogu</p>
+</div>
 
 
 ### Grogu is performance oriented ORM-Like library written in golang
