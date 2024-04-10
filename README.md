@@ -77,7 +77,8 @@ repo.DeleteOne(userId, func() {
 
 ## Note: This library is not production ready. This means, you should not use it in your scalable/heavy projects 
 
-#
-#
+# Development Priorities
+
+* Multiple Db Support (Postgresql, MariaDB, MongoDB, ClickHouse)
 
  <p align="center">May the Force be with You! </p>
