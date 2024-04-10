@@ -1,0 +1,15 @@
+
+postgresql:
+  HOST: "128.140.65.228"
+  PORT: 5432
+  USER: "pernodsys"
+  PASS: "Dg2RLtPZl9cbCdzsnsWzRLt"
+  DEFAULT_DB: "dev"
+  MAX_CONN: 10
+  DRIVER: "pgx"
+
+logger:
+  DISABLE_CALLER: false
+  DISABLE_STACKTRACE: false
+  ENCODING: json
+  LEVEL: info
