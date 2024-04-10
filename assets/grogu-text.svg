@@ -6,9 +6,10 @@
         }
 
         .subTitle {
-        font-size:15px;
-        fill: #00FFFF;
-        width:100%;
+            font-size:15px;
+            fill: #00FFFF;
+            width:100%;
+            font-family: Arial, Helvetica, sans-serif;
         }
     </style>
 
