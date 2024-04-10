@@ -36,7 +36,6 @@ type IBaseRepo[C, U, G any] interface {
 	GetOne(int64, func(G), func(int64), ...SubQuery)
 	DeleteOne(int64, func(), func(int64))
 	ChangeStatus(int64, int64, func(), func(int64))
-	CheckOrgIds(int64, []int64, func(int64), func(int64))
 }
 
 type BaseRepo[C, U, G any] struct {
@@ -267,34 +266,5 @@ func (b *BaseRepo[C, U, G]) ChangeStatus(entity_id, status int64, success func()
 		return
 	}
 	success()
-	return
-}
-
-func (b *BaseRepo[C, U, G]) CheckOrgIds(entity_id int64, org_ids []int64, success func(id int64), failure func(record int64)) {
-	var query string
-	var errDb error
-	var orgId int64
-	var stringArr []string
-	var statusClause string
-
-	for _, id := range org_ids {
-		stringArr = append(stringArr, fmt.Sprintf("%d", id))
-	}
-
-	if b.softDeletable {
-		statusClause = fmt.Sprintf(`AND %s=%v`, b.statusName, ConvertStatus(1, b.statusType))
-	}
-
-	query = fmt.Sprintf(`SELECT org_id FROM %s.%s WHERE %s=$1 AND org_id IN (%s) %s`, b.Schema, b.Table, b.PrimaryKey, strings.Join(stringArr, ","), statusClause)
-	errDb = b.db.QueryRow(b.ctx, query, entity_id).Scan(&orgId)
-	if errDb != nil && utils.CheckStringIfContains(errDb.Error(), "no rows in result set") == false {
-		println(errDb.Error())
-		failure(-1)
-		return
-	} else if errDb != nil && utils.CheckStringIfContains(errDb.Error(), "no rows in result set") == true {
-		failure(0)
-		return
-	}
-	success(orgId)
 	return
 }
