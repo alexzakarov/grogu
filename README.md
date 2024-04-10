@@ -4,8 +4,11 @@
 <img alt="go-grogu" src="/assets/go-grogu.png" width="400" />
 </div>
 
+<div align="center">
+
 # ![grogu](./assets/grogu-text.svg)
 
+</div>
 
 ### Grogu is performance oriented ORM-Like library written in golang
  
