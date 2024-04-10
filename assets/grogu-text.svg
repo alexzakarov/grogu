@@ -1,14 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="40">
+<svg xmlns="http://www.w3.org/2000/svg" height="60">
     <style >
         .subTitle {
+        padding-top:30px;
+        font-size:50px;
         fill: #00FFFF;
-        transition: fill .3s ease;
+        width:100%;
         }
     </style>
 
     <g class="subTitle">
-        <text x="30%" y="10" dy=".35em">
-            TypeScript Jobs
+        <text style="text-align:center;" x="30%" y="10" dy=".35em">
+            Grogu
         </text>
     </g>
 </svg>
