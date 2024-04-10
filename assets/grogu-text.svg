@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" height="40">
-    <style src="./style.css" >
-        .grogu{
-            font-size: 50px;
-            color: aqua;
+    <style >
+        .subTitle {
+        fill: #00FFFF;
+        transition: fill .3s ease;
         }
     </style>
 
- <g >
-     <div align="center">
-         <p >Grogu</p>
-     </div>
+    <g class="subTitle">
+        <text x="30%" y="10" dy=".35em">
+            TypeScript Jobs
+        </text>
     </g>
 </svg>
