@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"fmt"
-	"github.com/alexzakarov/grogu/examples/postgres/config"
+	"github.com/alexzakarov/grogu/config"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -11,9 +11,9 @@ var (
 )
 
 // NewSQLXPostgresqlDB Return new Postgresql client
-func NewSQLXPostgresqlDB(cfg *config.Config) (db *sqlx.DB, err error) {
+func NewSQLXPostgresqlDB(cfg config.SQLXDbConfig) (db *sqlx.DB, err error) {
 	println("Driver PostgreSQL Initialized")
-	SQLXConnStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.Postgresql.HOST, cfg.Postgresql.PORT, cfg.Postgresql.USER, cfg.Postgresql.PASS, cfg.Postgresql.DEFAULT_DB)
+	SQLXConnStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.Host, cfg.Port, cfg.User, cfg.Pass, cfg.DefaultDb)
 
 	db, err = sqlx.Connect("postgres", SQLXConnStr)
 	if err != nil {
@@ -29,9 +29,9 @@ func NewSQLXPostgresqlDB(cfg *config.Config) (db *sqlx.DB, err error) {
 }
 
 // NewSQLXPostgresqlDB Return new Postgresql client
-func NewSQLXMySqlDB(cfg *config.Config) (db *sqlx.DB, err error) {
+func NewSQLXMySqlDB(cfg config.SQLXDbConfig) (db *sqlx.DB, err error) {
 	println("Driver PostgreSQL Initialized")
-	SQLXConnStr = fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.Mysql.USER, cfg.Mysql.PASS, cfg.Mysql.HOST, cfg.Mysql.PORT, cfg.Mysql.DEFAULT_DB)
+	SQLXConnStr = fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.User, cfg.Pass, cfg.Host, cfg.Port, cfg.DefaultDb)
 
 	db, err = sqlx.Connect("mysql", SQLXConnStr)
 	if err != nil {

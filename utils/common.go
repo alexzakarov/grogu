@@ -55,3 +55,18 @@ func CheckStringIfContains(input_text string, search_text string) bool {
 	CheckContains := strings.Contains(input_text, search_text)
 	return CheckContains
 }
+
+func ConvertStatus(status int64, status_type string) interface{} {
+	var data interface{}
+	if status_type == "bool" {
+		switch status {
+		case 1:
+			data = true
+		case 2:
+			data = false
+		}
+	} else if status_type == "int" {
+		data = status
+	}
+	return data
+}

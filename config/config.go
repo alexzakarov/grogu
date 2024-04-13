@@ -17,6 +17,30 @@ type GeneralConfig struct {
 	StatusType    string `json:"status_type"`
 }
 
+type PGXDbConfig struct {
+	Host      string `json:"host"`
+	Port      int    `json:"port"`
+	User      string `json:"user"`
+	Pass      string `json:"pass"`
+	DefaultDb string `json:"default_db"`
+	MaxConn   int    `json:"max_conn"`
+}
+
+type PQDbConfig struct {
+	Host      string `json:"host"`
+	Port      int    `json:"port"`
+	User      string `json:"user"`
+	Pass      string `json:"pass"`
+	DefaultDb string `json:"default_db"`
+}
+
+type SQLXDbConfig struct {
+	Host      string `json:"host"`
+	Port      int    `json:"port"`
+	User      string `json:"user"`
+	Pass      string `json:"pass"`
+	DefaultDb string `json:"default_db"`
+}
 type PGXBaseRepoConfig struct {
 	Ctx context.Context `json:"ctx"`
 	Db  *pgxpool.Pool   `json:"db"`

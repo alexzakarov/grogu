@@ -137,7 +137,7 @@ func (b *PQBaseRepo[C, U, G]) Update(entity_id int64, dat U, success func(), fai
 	entity = append(entity, entity_id)
 
 	if b.softDeletable {
-		statusClause = fmt.Sprintf(`AND %s=%v`, b.statusName, ConvertStatus(1, b.statusType))
+		statusClause = fmt.Sprintf(`AND %s=%v`, b.statusName, utils.ConvertStatus(1, b.statusType))
 	}
 
 	query := fmt.Sprintf(`UPDATE %s.%s SET %s WHERE %s=$%d %s`, b.Schema, b.Table, b.updateReplacer, b.PrimaryKey, len(entity), statusClause)
@@ -176,7 +176,7 @@ func (b *PQBaseRepo[C, U, G]) GetOne(entity_id int64, success func(data G), fail
 	subQs := strings.Join(qsReplaced, " ")
 
 	if b.softDeletable {
-		statusClause = fmt.Sprintf(`AND %s=%v`, b.statusName, ConvertStatus(1, b.statusType))
+		statusClause = fmt.Sprintf(`AND %s=%v`, b.statusName, utils.ConvertStatus(1, b.statusType))
 	}
 	query := fmt.Sprintf(`SELECT TO_JSON(ENTITY) FROM (SELECT %s %s FROM %s.%s ent WHERE %s=$1 %s) ENTITY`, b.strGetFields, subQs, b.Schema, b.Table, b.PrimaryKey, statusClause)
 	errDb = b.db.QueryRow(query, entity_id).Scan(&bytes)
@@ -205,8 +205,8 @@ func (b *PQBaseRepo[C, U, G]) DeleteOne(entity_id int64, success func(), failure
 	var statusUpdateClause string
 
 	if b.softDeletable {
-		statusClause = fmt.Sprintf(`AND %s=%v`, b.statusName, ConvertStatus(1, b.statusType))
-		statusUpdateClause = fmt.Sprintf(`%s=%v`, b.statusName, ConvertStatus(2, b.statusType))
+		statusClause = fmt.Sprintf(`AND %s=%v`, b.statusName, utils.ConvertStatus(1, b.statusType))
+		statusUpdateClause = fmt.Sprintf(`%s=%v`, b.statusName, utils.ConvertStatus(2, b.statusType))
 		query = fmt.Sprintf(`UPDATE %s.%s SET %s WHERE %s=$1 %s`, b.Schema, b.Table, statusUpdateClause, b.PrimaryKey, statusClause)
 	} else {
 		query = fmt.Sprintf(`DELETE FROM %s.%s WHERE %s=$1`, b.Schema, b.Table, b.PrimaryKey)
@@ -232,7 +232,7 @@ func (b *PQBaseRepo[C, U, G]) ChangeStatus(entity_id, status int64, success func
 	var errDb error
 
 	query = fmt.Sprintf(`UPDATE %s.%s SET %s=$1 WHERE %s=$2`, b.Schema, b.Table, b.statusName, b.PrimaryKey)
-	cmd, errDb = b.db.Exec(query, ConvertStatus(status, b.statusType), entity_id)
+	cmd, errDb = b.db.Exec(query, utils.ConvertStatus(status, b.statusType), entity_id)
 	affected, errRows := cmd.RowsAffected()
 	if errRows != nil {
 		println(errDb.Error())

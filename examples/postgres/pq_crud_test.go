@@ -28,7 +28,13 @@ func init() {
 	)`
 
 	// Init Clients
-	pqDb, err = postgres.NewPQPostgresqlDB(cfg, "postgres")
+	pqDb, err = postgres.NewPQPostgresqlDB(pgConfig.PQDbConfig{
+		Host:      cfg.Postgresql.HOST,
+		Port:      cfg.Postgresql.PORT,
+		User:      cfg.Postgresql.USER,
+		Pass:      cfg.Postgresql.PASS,
+		DefaultDb: cfg.Postgresql.DEFAULT_DB,
+	})
 	if err != nil {
 		appLogger.Error("Error when tyring to connect to Postgresql")
 	} else {

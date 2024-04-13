@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/alexzakarov/grogu/examples/postgres/config"
+	"github.com/alexzakarov/grogu/config"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -19,9 +19,9 @@ const (
 )
 
 // NewPGXPostgresqlDB Return new Postgresql client
-func NewPGXPostgresqlDB(cfg *config.Config) (db *pgxpool.Pool, err error) {
+func NewPGXPostgresqlDB(cfg config.PGXDbConfig) (db *pgxpool.Pool, err error) {
 	println("Driver PostgreSQL Initialized")
-	ConnStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s pool_max_conns=%d", cfg.Postgresql.HOST, cfg.Postgresql.PORT, cfg.Postgresql.USER, cfg.Postgresql.PASS, cfg.Postgresql.DEFAULT_DB, cfg.Postgresql.MAX_CONN)
+	ConnStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s pool_max_conns=%d", cfg.Host, cfg.Port, cfg.User, cfg.Pass, cfg.DefaultDb, cfg.MaxConn)
 
 	db, err = pgxpool.Connect(context.Background(), ConnStr)
 	if err != nil {

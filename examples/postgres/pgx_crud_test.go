@@ -28,7 +28,14 @@ func init() {
 	)`
 
 	// Init Clients
-	pgxDb, err = postgres.NewPGXPostgresqlDB(cfg)
+	pgxDb, err = postgres.NewPGXPostgresqlDB(pgConfig.PGXDbConfig{
+		Host:      cfg.Postgresql.HOST,
+		Port:      cfg.Postgresql.PORT,
+		User:      cfg.Postgresql.USER,
+		Pass:      cfg.Postgresql.PASS,
+		DefaultDb: cfg.Postgresql.DEFAULT_DB,
+		MaxConn:   cfg.Postgresql.MAX_CONN,
+	})
 	if err != nil {
 		appLogger.Error("Error when tyring to connect to Postgresql")
 	} else {

@@ -28,7 +28,13 @@ func init() {
 	)`
 
 	// Init Clients
-	sqlxDb, err = postgres.NewSQLXPostgresqlDB(cfg)
+	sqlxDb, err = postgres.NewSQLXPostgresqlDB(pgConfig.SQLXDbConfig{
+		Host:      cfg.Postgresql.HOST,
+		Port:      cfg.Postgresql.PORT,
+		User:      cfg.Postgresql.USER,
+		Pass:      cfg.Postgresql.PASS,
+		DefaultDb: cfg.Postgresql.DEFAULT_DB,
+	})
 	if err != nil {
 		appLogger.Error("Error when tyring to connect to Postgresql")
 	} else {
