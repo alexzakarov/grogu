@@ -1,9 +1,9 @@
-package database
+package postgres
 
 import (
 	"context"
 	"fmt"
-	"github.com/alexzakarov/grogu/examples/config"
+	"github.com/alexzakarov/grogu/examples/postgres/config"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -18,8 +18,8 @@ const (
 	connMaxIdleTime = 20
 )
 
-// NewPostgresqlDB Return new Postgresql client
-func NewPostgresqlDB(cfg *config.Config) (db *pgxpool.Pool, err error) {
+// NewPGXPostgresqlDB Return new Postgresql client
+func NewPGXPostgresqlDB(cfg *config.Config) (db *pgxpool.Pool, err error) {
 	println("Driver PostgreSQL Initialized")
 	ConnStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s pool_max_conns=%d", cfg.Postgresql.HOST, cfg.Postgresql.PORT, cfg.Postgresql.USER, cfg.Postgresql.PASS, cfg.Postgresql.DEFAULT_DB, cfg.Postgresql.MAX_CONN)
 

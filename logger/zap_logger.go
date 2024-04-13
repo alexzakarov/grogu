@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/alexzakarov/grogu/examples/config"
+	"github.com/alexzakarov/grogu/examples/postgres/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
