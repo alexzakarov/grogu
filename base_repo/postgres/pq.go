@@ -27,7 +27,7 @@ type PQBaseRepo[C, U, G any] struct {
 	statusType      string   `json:"status_type"`
 }
 
-func NewPQBaseRepo[C, U, G any](config config.PQPostgresConfig) IBaseRepo[C, U, G] {
+func NewPQBaseRepo[C, U, G any](config config.PQBaseRepoConfig) IBaseRepo[C, U, G] {
 	var createStruc C
 	var updateStruc U
 	var getStruc G

@@ -31,7 +31,7 @@ func NewSQLXPostgresqlDB(cfg *config.Config) (db *sqlx.DB, err error) {
 // NewSQLXPostgresqlDB Return new Postgresql client
 func NewSQLXMySqlDB(cfg *config.Config) (db *sqlx.DB, err error) {
 	println("Driver PostgreSQL Initialized")
-	SQLXConnStr = fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.Postgresql.USER, cfg.Postgresql.PASS, cfg.Postgresql.HOST, cfg.Postgresql.PORT, cfg.Postgresql.DEFAULT_DB)
+	SQLXConnStr = fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.Mysql.USER, cfg.Mysql.PASS, cfg.Mysql.HOST, cfg.Mysql.PORT, cfg.Mysql.DEFAULT_DB)
 
 	db, err = sqlx.Connect("mysql", SQLXConnStr)
 	if err != nil {

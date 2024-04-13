@@ -29,7 +29,7 @@ type PGXBaseRepo[C, U, G any] struct {
 	statusType      string   `json:"status_type"`
 }
 
-func NewPGXBaseRepo[C, U, G any](config config.PGXPostgresConfig) IBaseRepo[C, U, G] {
+func NewPGXBaseRepo[C, U, G any](config config.PGXBaseRepoConfig) IBaseRepo[C, U, G] {
 	var createStruc C
 	var updateStruc U
 	var getStruc G

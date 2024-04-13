@@ -30,7 +30,7 @@ type SQLXBaseRepo[C, U, G any] struct {
 	statusType      string   `json:"status_type"`
 }
 
-func NewSQLXBaseRepo[C, U, G any](config config.SQLXPostgresConfig) IBaseRepo[C, U, G] {
+func NewSQLXBaseRepo[C, U, G any](config config.SQLXBaseRepoConfig) IBaseRepo[C, U, G] {
 	var createStruc C
 	var updateStruc U
 	var getStruc G

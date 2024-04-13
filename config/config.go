@@ -17,17 +17,17 @@ type GeneralConfig struct {
 	StatusType    string `json:"status_type"`
 }
 
-type PGXPostgresConfig struct {
+type PGXBaseRepoConfig struct {
 	Ctx context.Context `json:"ctx"`
 	Db  *pgxpool.Pool   `json:"db"`
 	GeneralConfig
 }
 
-type PQPostgresConfig struct {
+type PQBaseRepoConfig struct {
 	Db *sql.DB `json:"db"`
 	GeneralConfig
 }
-type SQLXPostgresConfig struct {
+type SQLXBaseRepoConfig struct {
 	Ctx context.Context `json:"ctx"`
 	Db  *sqlx.DB        `json:"db"`
 	GeneralConfig

@@ -50,7 +50,7 @@ func init() {
 	//status bool:
 	//    1 - Active
 	//    2 - Passive
-	sqlxBaseRepo = postgres2.NewSQLXBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.SQLXPostgresConfig{
+	sqlxBaseRepo = postgres2.NewSQLXBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.SQLXBaseRepoConfig{
 		Db: sqlxDb,
 		GeneralConfig: pgConfig.GeneralConfig{
 			Schema:        "public",

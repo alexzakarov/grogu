@@ -50,7 +50,7 @@ func init() {
 	//status bool:
 	//    1 - Active
 	//    2 - Passive
-	pgxBaseRepo = postgres2.NewPGXBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.PGXPostgresConfig{
+	pgxBaseRepo = postgres2.NewPGXBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.PGXBaseRepoConfig{
 		Ctx: ctx,
 		Db:  pgxDb,
 		GeneralConfig: pgConfig.GeneralConfig{

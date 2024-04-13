@@ -50,7 +50,7 @@ func init() {
 	//status bool:
 	//    1 - Active
 	//    2 - Passive
-	pqBaseRepo = postgres2.NewPQBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.PQPostgresConfig{
+	pqBaseRepo = postgres2.NewPQBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.PQBaseRepoConfig{
 		Db: pqDb,
 		GeneralConfig: pgConfig.GeneralConfig{
 			Schema:        "public",
