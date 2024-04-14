@@ -1,0 +1,12 @@
+mysql:
+  HOST: "127.0.0.1"
+  PORT: 3306
+  USER: "root"
+  PASS: "123456"
+  DEFAULT_DB: "dev"
+
+logger:
+  DISABLE_CALLER: false
+  DISABLE_STACKTRACE: false
+  ENCODING: json
+  LEVEL: info

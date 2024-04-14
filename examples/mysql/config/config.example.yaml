@@ -1,0 +1,15 @@
+
+postgresql:
+  HOST: ""
+  PORT: 5432
+  USER: ""
+  PASS: ""
+  DEFAULT_DB: ""
+  MAX_CONN: 10
+  DRIVER: ""
+
+logger:
+  DISABLE_CALLER: false
+  DISABLE_STACKTRACE: false
+  ENCODING: json
+  LEVEL: info

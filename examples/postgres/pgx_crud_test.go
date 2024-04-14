@@ -2,9 +2,10 @@ package postgres
 
 import (
 	"fmt"
-	postgres2 "github.com/alexzakarov/grogu/base_repo/postgres"
 	pgConfig "github.com/alexzakarov/grogu/config"
+	"github.com/alexzakarov/grogu/database/ports"
 	"github.com/alexzakarov/grogu/database/postgres"
+	repos "github.com/alexzakarov/grogu/database/postgres/base_repo/postgres"
 	"github.com/alexzakarov/grogu/examples"
 	"github.com/alexzakarov/grogu/examples/postgres/config"
 	"github.com/alexzakarov/grogu/logger"
@@ -14,6 +15,7 @@ import (
 )
 
 func init() {
+	var baseDB ports.IBaseDb
 	cfg, errConfig := config.ParseConfig()
 	if errConfig != nil {
 		log.Fatal(errConfig)
@@ -28,7 +30,7 @@ func init() {
 	)`
 
 	// Init Clients
-	pgxDb, err = postgres.NewPGXPostgresqlDB(pgConfig.PGXDbConfig{
+	baseDB, err = postgres.NewPGXPostgresqlDB(pgConfig.PGXDbConfig{
 		Host:      cfg.Postgresql.HOST,
 		Port:      cfg.Postgresql.PORT,
 		User:      cfg.Postgresql.USER,
@@ -42,10 +44,9 @@ func init() {
 		appLogger.Info("Postgresql connected")
 	}
 
-	_, err = pgxDb.Exec(ctx, tableQuery)
+	_, err = baseDB.Exec(tableQuery)
 	if err != nil {
 		println(err.Error())
-		return
 	}
 
 	//status_type gets two values which can be "int" or "bool"
@@ -57,18 +58,18 @@ func init() {
 	//status bool:
 	//    1 - Active
 	//    2 - Passive
-	pgxBaseRepo = postgres2.NewPGXBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.PGXBaseRepoConfig{
+	pgxRepo = repos.NewPostgresBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.PGXBaseRepoConfig{
 		Ctx: ctx,
-		Db:  pgxDb,
+		Db:  baseDB,
 		GeneralConfig: pgConfig.GeneralConfig{
-			Schema:        "public",
-			Table:         "users",
+			Table:         "public.users",
 			PrimaryKey:    "user_id",
 			SoftDeletable: false,
 			StatusName:    "",
 			StatusType:    "",
 		},
-	})
+	}.ToPostgresConfig())
+
 }
 
 func TestPGXCreate(t *testing.T) {
@@ -83,7 +84,7 @@ func TestPGXCreate(t *testing.T) {
 	}
 	meta := user.ToDbModel("This user has admin role")
 
-	pgxBaseRepo.Create(meta, func(id int64) {
+	pgxRepo.Create(meta, func(id int64) {
 		record = 1
 		userId = id
 	}, func(rec int64) {
@@ -106,7 +107,7 @@ func TestPGXUpdate(t *testing.T) {
 		UserTitle: "Test User",
 	}
 	meta := user.ToDbModel("This user has admin role")
-	pgxBaseRepo.Update(userId, meta, func() {
+	pgxRepo.Update(userId, meta, func() {
 		record = 1
 	}, func(rec int64) {
 		// negative rec refers to db errors
@@ -124,7 +125,7 @@ func TestPGXGetOne(t *testing.T) {
 		record int64
 	)
 
-	pgxBaseRepo.GetOne(userId, func(user examples.UserResDto) {
+	pgxRepo.GetOne(userId, func(user examples.UserResDto) {
 		record = 1
 		_ = user
 	}, func(rec int64) {
@@ -142,7 +143,7 @@ func TestPGXDeleteOne(t *testing.T) {
 		record int64
 	)
 
-	pgxBaseRepo.DeleteOne(userId, func() {
+	pgxRepo.DeleteOne(userId, func() {
 		record = 1
 	}, func(rec int64) {
 		// negative rec refers to db errors

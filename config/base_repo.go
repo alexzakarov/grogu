@@ -1,4 +1,4 @@
-package postgres
+package config
 
 type SubQuery struct {
 	IsSingle bool   `json:"is_one"`

@@ -2,18 +2,21 @@ package postgres
 
 import (
 	"fmt"
-	postgres2 "github.com/alexzakarov/grogu/base_repo/postgres"
 	pgConfig "github.com/alexzakarov/grogu/config"
+	"github.com/alexzakarov/grogu/database/ports"
 	"github.com/alexzakarov/grogu/database/postgres"
+	repos "github.com/alexzakarov/grogu/database/postgres/base_repo/postgres"
 	"github.com/alexzakarov/grogu/examples"
 	"github.com/alexzakarov/grogu/examples/postgres/config"
 	"github.com/alexzakarov/grogu/logger"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"reflect"
 	"testing"
 )
 
 func init() {
+	var baseDB ports.IBaseDb
 	cfg, errConfig := config.ParseConfig()
 	if errConfig != nil {
 		log.Fatal(errConfig)
@@ -28,7 +31,7 @@ func init() {
 	)`
 
 	// Init Clients
-	sqlxDb, err = postgres.NewSQLXPostgresqlDB(pgConfig.SQLXDbConfig{
+	baseDB, err = postgres.NewSQLXPostgresqlDB(pgConfig.SQLXDbConfig{
 		Host:      cfg.Postgresql.HOST,
 		Port:      cfg.Postgresql.PORT,
 		User:      cfg.Postgresql.USER,
@@ -41,7 +44,7 @@ func init() {
 		appLogger.Info("Postgresql connected")
 	}
 
-	_, err = sqlxDb.Exec(tableQuery)
+	_, err = baseDB.Exec(tableQuery)
 	if err != nil {
 		println(err.Error())
 		return
@@ -56,17 +59,16 @@ func init() {
 	//status bool:
 	//    1 - Active
 	//    2 - Passive
-	sqlxBaseRepo = postgres2.NewSQLXBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.SQLXBaseRepoConfig{
-		Db: sqlxDb,
+	sqlxRepo = repos.NewPostgresBaseRepo[examples.CreateUserDbModel, examples.UpdateUserDbModel, examples.UserResDto](pgConfig.SQLXBaseRepoConfig{
+		Db: baseDB,
 		GeneralConfig: pgConfig.GeneralConfig{
-			Schema:        "public",
-			Table:         "users",
+			Table:         "public.users",
 			PrimaryKey:    "user_id",
 			SoftDeletable: false,
 			StatusName:    "",
 			StatusType:    "",
 		},
-	})
+	}.ToPostgresConfig())
 }
 
 func TestSQLXCreate(t *testing.T) {
@@ -81,7 +83,7 @@ func TestSQLXCreate(t *testing.T) {
 	}
 	meta := user.ToDbModel("This user has admin role")
 
-	sqlxBaseRepo.Create(meta, func(id int64) {
+	sqlxRepo.Create(meta, func(id int64) {
 		record = 1
 		userId = id
 	}, func(rec int64) {
@@ -104,7 +106,7 @@ func TestSQLXUpdate(t *testing.T) {
 		UserTitle: "Test User",
 	}
 	meta := user.ToDbModel("This user has admin role updated")
-	sqlxBaseRepo.Update(userId, meta, func() {
+	sqlxRepo.Update(userId, meta, func() {
 		record = 1
 	}, func(rec int64) {
 		// negative rec refers to db errors
@@ -122,7 +124,7 @@ func TestSQLXGetOne(t *testing.T) {
 		record int64
 	)
 
-	sqlxBaseRepo.GetOne(userId, func(user examples.UserResDto) {
+	sqlxRepo.GetOne(userId, func(user examples.UserResDto) {
 		record = 1
 		_ = user
 	}, func(rec int64) {
@@ -140,7 +142,7 @@ func TestSQLXDeleteOne(t *testing.T) {
 		record int64
 	)
 
-	sqlxBaseRepo.DeleteOne(userId, func() {
+	sqlxRepo.DeleteOne(userId, func() {
 		record = 1
 	}, func(rec int64) {
 		// negative rec refers to db errors
@@ -161,6 +163,8 @@ func BenchmarkAllSQLX(b *testing.B) {
 }
 
 func BenchmarkSQLXCreate(b *testing.B) {
+	var test int64
+	fmt.Println(reflect.TypeOf(reflect.TypeOf(test)))
 	for i := 0; i < b.N; i++ {
 		TestSQLXCreate(&testing.T{})
 	}

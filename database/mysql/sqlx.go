@@ -1,7 +1,6 @@
-package postgres
+package mysql
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"github.com/alexzakarov/grogu/config"
@@ -34,9 +33,13 @@ func (s *SqlxDb) Exec(query string, dat ...interface{}) (rows_affected int64, er
 }
 
 func (s *SqlxDb) Insert(query string, dat ...interface{}) (data int64, err error) {
-
-	err = s.db.QueryRow(query, dat...).Scan(&data)
-
+	var cmd sql.Result
+	cmd, err = s.db.Exec(query, dat...)
+	if err != nil {
+		return 0, err
+	}
+	data, err = cmd.LastInsertId()
+	fmt.Println("test: ", data)
 	return
 }
 
@@ -79,13 +82,13 @@ func (s *SqlxDb) Delete(query string, dat ...interface{}) (rows_affected int64, 
 	return
 }
 
-// NewSQLXPostgresqlDB Return new Postgresql client
-func NewSQLXPostgresqlDB(cfg config.SQLXDbConfig) (db ports.IBaseDb, err error) {
+// NewMySqlDB Return new Postgresql client
+func NewMySqlDB(cfg config.SQLXDbConfig) (db ports.IBaseDb, err error) {
 	var baseDB *sqlx.DB
-	println("Driver PostgreSQL Initialized")
-	SQLXConnStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.Host, cfg.Port, cfg.User, cfg.Pass, cfg.DefaultDb)
+	println("Driver mysql Initialized")
+	SQLXConnStr = fmt.Sprintf("%s:%s@(%s:%d)/%s", cfg.User, cfg.Pass, cfg.Host, cfg.Port, cfg.DefaultDb)
 
-	baseDB, err = sqlx.ConnectContext(context.Background(), "postgres", SQLXConnStr)
+	baseDB, err = sqlx.Connect("mysql", SQLXConnStr)
 	if err != nil {
 		println(err.Error())
 	} else {
