@@ -1,17 +1,20 @@
 package postgres
 
 import (
+	"errors"
 	"fmt"
+	"log"
+	"testing"
+
 	pgConfig "github.com/alexzakarov/grogu/config"
 	"github.com/alexzakarov/grogu/database/ports"
 	"github.com/alexzakarov/grogu/database/postgres"
 	repos "github.com/alexzakarov/grogu/database/postgres/base_repo/postgres"
+	groguErrors "github.com/alexzakarov/grogu/errors"
 	"github.com/alexzakarov/grogu/examples"
 	"github.com/alexzakarov/grogu/examples/postgres/config"
 	"github.com/alexzakarov/grogu/logger"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"testing"
 )
 
 func init() {
@@ -87,9 +90,12 @@ func TestPGXCreate(t *testing.T) {
 	pgxRepo.Create(meta, func(id int64) {
 		record = 1
 		userId = id
-	}, func(rec int64) {
-		// negative rec refers to db errors
-		record = rec
+	}, func(err error) {
+		if errors.Is(err, groguErrors.ErrConflict) {
+			record = -2
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, "User cannot be created")
@@ -109,9 +115,12 @@ func TestPGXUpdate(t *testing.T) {
 	meta := user.ToDbModel("This user has admin role")
 	pgxRepo.Update(userId, meta, func() {
 		record = 1
-	}, func(rec int64) {
-		// negative rec refers to db errors
-		record = rec
+	}, func(err error) {
+		if errors.Is(err, groguErrors.ErrNotFound) {
+			record = 0
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, fmt.Sprintf("User cannot be updated; User ID: %d", userId))
@@ -128,9 +137,12 @@ func TestPGXGetOne(t *testing.T) {
 	pgxRepo.GetOne(userId, func(user examples.UserResDto) {
 		record = 1
 		_ = user
-	}, func(rec int64) {
-		// negative rec refers to db errors
-		record = rec
+	}, func(err error) {
+		if errors.Is(err, groguErrors.ErrNotFound) {
+			record = 0
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, fmt.Sprintf("failed to retrieve user; User ID: %d", userId))
@@ -145,9 +157,12 @@ func TestPGXDeleteOne(t *testing.T) {
 
 	pgxRepo.DeleteOne(userId, func() {
 		record = 1
-	}, func(rec int64) {
-		// negative rec refers to db errors
-		record = rec
+	}, func(err error) {
+		if errors.Is(err, groguErrors.ErrNotFound) {
+			record = 0
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, fmt.Sprintf("User cannot be deleted; User ID: %d", userId))
