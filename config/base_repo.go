@@ -7,9 +7,9 @@ type SubQuery struct {
 }
 
 type IBaseRepo[C, U, G any] interface {
-	Create(C, func(id int64), func(record int64))
-	Update(int64, U, func(), func(int64))
-	GetOne(int64, func(G), func(int64), ...SubQuery)
-	DeleteOne(int64, func(), func(int64))
-	ChangeStatus(int64, int64, func(), func(int64))
+	Create(C, func(id int64), func(error))
+	Update(int64, U, func(), func(error))
+	GetOne(int64, func(G), func(error), ...SubQuery)
+	DeleteOne(int64, func(), func(error))
+	ChangeStatus(int64, int64, func(), func(error))
 }
