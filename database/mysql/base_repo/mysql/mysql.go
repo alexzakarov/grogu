@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/alexzakarov/grogu/config"
 	"github.com/alexzakarov/grogu/database/ports"
+	groguErrors "github.com/alexzakarov/grogu/errors"
 	"github.com/alexzakarov/grogu/examples"
 	"github.com/alexzakarov/grogu/utils"
-	"strings"
 )
 
 type SQLXBaseRepo[C, U, G any] struct {
@@ -99,7 +101,7 @@ func NewSQLXBaseRepo[C, U any, G examples.UserResDto](config config.PostgresConf
 	}
 }
 
-func (b *SQLXBaseRepo[C, U, G]) Create(dat C, success func(id int64), failure func(record int64)) {
+func (b *SQLXBaseRepo[C, U, G]) Create(dat C, success func(id int64), failure func(error)) {
 	var mapEntity []interface{}
 	var errParse error
 	var errDb error
@@ -109,7 +111,7 @@ func (b *SQLXBaseRepo[C, U, G]) Create(dat C, success func(id int64), failure fu
 	_, mapEntity, errParse = utils.Convert(dat)
 	if errParse != nil {
 		println(errParse.Error())
-		failure(-1)
+		failure(groguErrors.ErrParse)
 		return
 	}
 	entity = append(entity, mapEntity...)
@@ -118,17 +120,17 @@ func (b *SQLXBaseRepo[C, U, G]) Create(dat C, success func(id int64), failure fu
 	data, errDb = b.db.Insert(query, entity...)
 	if errDb != nil && utils.CheckStringIfContains(errDb.Error(), "duplicate key value") == false {
 		println(errDb.Error())
-		failure(-1)
+		failure(groguErrors.ErrDatabase)
 		return
 	} else if errDb != nil && utils.CheckStringIfContains(errDb.Error(), "duplicate key value") == true {
-		failure(-2)
+		failure(groguErrors.ErrConflict)
 		return
 	}
 	success(data)
 	return
 }
 
-func (b *SQLXBaseRepo[C, U, G]) Update(entity_id int64, dat U, success func(), failure func(record int64)) {
+func (b *SQLXBaseRepo[C, U, G]) Update(entity_id int64, dat U, success func(), failure func(error)) {
 	var mapEntity []interface{}
 	var errParse error
 	var errDb error
@@ -138,7 +140,7 @@ func (b *SQLXBaseRepo[C, U, G]) Update(entity_id int64, dat U, success func(), f
 	_, mapEntity, errParse = utils.Convert(dat)
 	if errParse != nil {
 		println(errParse.Error())
-		failure(-1)
+		failure(groguErrors.ErrParse)
 		return
 	}
 	entity = append(entity, mapEntity...)
@@ -152,14 +154,14 @@ func (b *SQLXBaseRepo[C, U, G]) Update(entity_id int64, dat U, success func(), f
 	_, errDb = b.db.Exec(query, entity...)
 	if errDb != nil {
 		println(errDb.Error())
-		failure(-1)
+		failure(groguErrors.ErrDatabase)
 		return
 	}
 	success()
 	return
 }
 
-func (b *SQLXBaseRepo[C, U, G]) GetOne(entity_id int64, success func(data G), failure func(record int64), sub_queries ...config.SubQuery) {
+func (b *SQLXBaseRepo[C, U, G]) GetOne(entity_id int64, success func(data G), failure func(error), sub_queries ...config.SubQuery) {
 	var bytes []byte
 	var errDb error
 	var entity G
@@ -186,22 +188,22 @@ func (b *SQLXBaseRepo[C, U, G]) GetOne(entity_id int64, success func(data G), fa
 	bytes, errDb = b.db.Select(query, entity_id)
 	if errDb != nil && utils.CheckStringIfContains(errDb.Error(), "no rows in result set") == false {
 		println(errDb.Error())
-		failure(-1)
+		failure(groguErrors.ErrDatabase)
 		return
 	} else if errDb != nil && utils.CheckStringIfContains(errDb.Error(), "no rows in result set") == true {
-		failure(0)
+		failure(groguErrors.ErrNotFound)
 		return
 	}
 	err := json.Unmarshal(bytes, &entity)
 	if err != nil {
 		println(err.Error())
-		failure(-2)
+		failure(groguErrors.ErrParse)
 	}
 	success(entity)
 	return
 }
 
-func (b *SQLXBaseRepo[C, U, G]) DeleteOne(entity_id int64, success func(), failure func(record int64)) {
+func (b *SQLXBaseRepo[C, U, G]) DeleteOne(entity_id int64, success func(), failure func(error)) {
 	var query string
 	var affected int64
 	var errDb error
@@ -219,17 +221,17 @@ func (b *SQLXBaseRepo[C, U, G]) DeleteOne(entity_id int64, success func(), failu
 	affected, errDb = b.db.Exec(query, entity_id)
 	if errDb != nil {
 		println(errDb.Error())
-		failure(-1)
+		failure(groguErrors.ErrDatabase)
 		return
 	} else if affected == 0 {
-		failure(0)
+		failure(groguErrors.ErrNotFound)
 		return
 	}
 	success()
 	return
 }
 
-func (b *SQLXBaseRepo[C, U, G]) ChangeStatus(entity_id, status int64, success func(), failure func(record int64)) {
+func (b *SQLXBaseRepo[C, U, G]) ChangeStatus(entity_id, status int64, success func(), failure func(error)) {
 	var query string
 	var affected int64
 	var errDb error
@@ -238,10 +240,10 @@ func (b *SQLXBaseRepo[C, U, G]) ChangeStatus(entity_id, status int64, success fu
 	affected, errDb = b.db.Exec(query, utils.ConvertStatus(status, b.statusType), entity_id)
 	if errDb != nil {
 		println(errDb.Error())
-		failure(-1)
+		failure(groguErrors.ErrDatabase)
 		return
 	} else if affected == 0 {
-		failure(0)
+		failure(groguErrors.ErrNotFound)
 		return
 	}
 	success()
