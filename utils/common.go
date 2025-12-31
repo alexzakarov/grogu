@@ -16,7 +16,6 @@ func getStructType(struc interface{}) reflect.Type {
 }
 
 func Convert(struc interface{}) ([]string, []interface{}, error) {
-
 	var returnMap []interface{}
 	var returnJsons []string
 
@@ -26,25 +25,17 @@ func Convert(struc interface{}) ([]string, []interface{}, error) {
 		return returnJsons, returnMap, errors.New("variable given is not a struct or a pointer to a struct")
 	}
 
-	for i := 0; i < sType.NumField(); i++ {
-		structFieldName := sType.Field(i).Name
-		structJsonName := sType.Field(i).Tag.Get("json")
-		if !strings.Contains(structJsonName, "sub") {
-			switch structJsonName {
-			case "-":
-			case "":
-			default:
-				parts := strings.Split(structJsonName, ",")
-				name := parts[0]
-				if name == "" {
-					name = structJsonName
-				}
-				structJsonName = name
-			}
-			structVal := reflect.ValueOf(struc)
-			returnMap = append(returnMap, structVal.FieldByName(structFieldName).Interface())
-			returnJsons = append(returnJsons, structJsonName)
-		}
+	metadata := getOrBuildMetadata(sType)
+
+	structVal := reflect.ValueOf(struc)
+	if structVal.Kind() == reflect.Ptr {
+		structVal = structVal.Elem()
+	}
+
+	for _, fieldMeta := range metadata.Fields {
+		fieldValue := structVal.Field(fieldMeta.Index)
+		returnMap = append(returnMap, fieldValue.Interface())
+		returnJsons = append(returnJsons, fieldMeta.JsonName)
 	}
 
 	return returnJsons, returnMap, nil
