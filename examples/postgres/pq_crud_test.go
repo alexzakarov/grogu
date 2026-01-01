@@ -1,6 +1,8 @@
 package postgres
 
 import (
+groguErrors "github.com/alexzakarov/grogu/errors"
+"errors"
 	"fmt"
 	pgConfig "github.com/alexzakarov/grogu/config"
 	"github.com/alexzakarov/grogu/database/ports"
@@ -85,9 +87,15 @@ func TestPQCreate(t *testing.T) {
 	pqRepo.Create(meta, func(id int64) {
 		record = 1
 		userId = id
-	}, func(rec int64) {
+	}, func(err error) {
 		// negative rec refers to db errors
-		record = rec
+		if errors.Is(err, groguErrors.ErrConflict) {
+			record = -2
+		} else if errors.Is(err, groguErrors.ErrNotFound) {
+			record = 0
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, "User cannot be created")
@@ -107,9 +115,15 @@ func TestPQUpdate(t *testing.T) {
 	meta := user.ToDbModel("This user has admin role updated")
 	pqRepo.Update(userId, meta, func() {
 		record = 1
-	}, func(rec int64) {
+	}, func(err error) {
 		// negative rec refers to db errors
-		record = rec
+		if errors.Is(err, groguErrors.ErrConflict) {
+			record = -2
+		} else if errors.Is(err, groguErrors.ErrNotFound) {
+			record = 0
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, fmt.Sprintf("User cannot be updated; User ID: %d", userId))
@@ -125,9 +139,15 @@ func TestPQGetOne(t *testing.T) {
 	pqRepo.GetOne(userId, func(user examples.UserResDto) {
 		record = 1
 		_ = user
-	}, func(rec int64) {
+	}, func(err error) {
 		// negative rec refers to db errors
-		record = rec
+		if errors.Is(err, groguErrors.ErrConflict) {
+			record = -2
+		} else if errors.Is(err, groguErrors.ErrNotFound) {
+			record = 0
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, fmt.Sprintf("failed to retrieve user; User ID: %d", userId))
@@ -142,9 +162,15 @@ func TestPQDeleteOne(t *testing.T) {
 
 	pqRepo.DeleteOne(userId, func() {
 		record = 1
-	}, func(rec int64) {
+	}, func(err error) {
 		// negative rec refers to db errors
-		record = rec
+		if errors.Is(err, groguErrors.ErrConflict) {
+			record = -2
+		} else if errors.Is(err, groguErrors.ErrNotFound) {
+			record = 0
+		} else {
+			record = -1
+		}
 	})
 
 	assertion.Equal(int64(1), record, fmt.Sprintf("User cannot be deleted; User ID: %d", userId))
